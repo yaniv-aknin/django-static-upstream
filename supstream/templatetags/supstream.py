@@ -1,10 +1,10 @@
 import os
 
 from django import template
-from django.conf import settings
 from django.core.cache import cache
 
 from ..utils import file_digest
+from .. import settings
 
 register = template.Library()
 
