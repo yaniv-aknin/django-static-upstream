@@ -34,12 +34,13 @@ def automagical_release_id(path):
     def git_handler(path):
         gitdir = find_upwards('.git', path)
         with open('/dev/null', 'w') as devnull:
-            process = Popen('git rev-parse HEAD ; git diff | md5', cwd=gitdir, shell=True,
+            process = Popen('git rev-parse HEAD ; git diff', cwd=gitdir, shell=True,
                             stdout=PIPE, stderr=PIPE, stdin=devnull)
             stdout, stderr = process.communicate()
+            rev_parse, diff = stdout.split('\n', 1)
             if process.returncode != 0:
                 raise AutomagicalReleaseIDError('git handler received nonzero exit; stderr=%r' % (stderr,))
-            return 'GIT-' + stdout.strip().replace('\n', '-')
+            return 'GIT-%s-%s' % (rev_parse, md5(diff).hexdigest())
 
     for scm_handler in (git_handler,):
         try:
