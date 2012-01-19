@@ -15,6 +15,7 @@ from django.template import loader, Template, Context, TemplateDoesNotExist
 from django.utils.http import http_date, parse_http_date
 from django.views.decorators.cache import cache_control
 
+from . import settings
 from .utils import file_digest
 
 @cache_control(max_age=60*60*24*14)
@@ -71,6 +72,10 @@ def serve(request, path, document_root=None, show_indexes=False, max_age=60*60*2
     response["ETag"] = etag
     if encoding:
         response["Content-Encoding"] = encoding
+    for pattern, mangler in settings.SUPSTREAM_HEADER_MANGLERS.iteritems():
+        if pattern.match(request.get_full_path()):
+            for header_name, header_value in mangler(request, response):
+                response[header_name] = header_value
     return response
 
 

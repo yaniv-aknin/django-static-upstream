@@ -4,6 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 
 from .utils import automagical_release_id, AutomagicalReleaseIDError
+from .manglers import load_manglers
 
 
 STATIC_URL=getattr(settings, 'STATIC_URL', None)
@@ -21,3 +22,5 @@ except AutomagicalReleaseIDError, error:
     # if you caught this, you should either provide a RELEASE_ID setting in your settings.py, as the docs say
     # OR file a bug report, because the automagical_release_id() mechanism is Supposed To Always Work (tm)
     raise ImproperlyConfigured("django-static-upstream failed getting you an automatic release id: %s" % (error,))
+
+SUPSTREAM_HEADER_MANGLERS=load_manglers(getattr(settings, 'SUPSTREAM_HEADER_MANGLERS', {}))
