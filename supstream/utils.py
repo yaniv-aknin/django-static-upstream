@@ -5,7 +5,6 @@ from hashlib import md5
 from subprocess import Popen, PIPE
 
 logger = logging.getLogger(__name__)
-logger.error('foo!')
 
 # ideas for optimizing this abound, but for now it's Good Enough
 def file_digest(filename, return_contents=False):
