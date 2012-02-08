@@ -24,3 +24,5 @@ except AutomagicalReleaseIDError, error:
     raise ImproperlyConfigured("django-static-upstream failed getting you an automatic release id: %s" % (error,))
 
 SUPSTREAM_HEADER_MANGLERS=load_manglers(getattr(settings, 'SUPSTREAM_HEADER_MANGLERS', {}))
+
+CACHE_ALIAS = getattr(settings, 'SUPSTREAM_CACHE_ALIAS', 'default')

@@ -1,9 +1,11 @@
 import os
 
-from django.core.cache import cache
+from django.core.cache import get_cache
 
 from .utils import file_digest
 from . import settings
+
+cache = get_cache(settings.CACHE_ALIAS)
 
 def get_url_for_static_file(filename):
     if filename is None:
