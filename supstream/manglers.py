@@ -1,5 +1,6 @@
 import re
 
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
 
@@ -34,3 +35,17 @@ def access_control_allow_origin_for_www(request, response):
         host = request.META['HTTP_HOST']
         host = 'www' + host[host.find('.'):]
         yield 'Access-Control-Allow-Origin', '%s://%s' % (scheme, host)
+
+def access_control_allow_origin_by_http_origin(request, response):
+    if not getattr(access_control_allow_origin_for_www, 'patterns', None):
+        try:
+            access_control_allow_origin_by_http_origin.patterns = \
+                map(re.compile, settings.SUPSTREAM_WILDCARD_ACCESS_CONTROL_ALLOW_ORIGIN_BY_HTTP_ORIGIN)
+        except re.error:
+            raise ImproperlyConfigured("Invalid pattern in "
+                                       "SUPSTREAM_WILDCARD_ACCESS_CONTROL_ALLOW_ORIGIN_BY_HTTP_ORIGIN")
+
+    patterns = access_control_allow_origin_by_http_origin.patterns
+    if 'HTTP_ORIGIN' in request.META:
+        if any(pattern.match(request.META['HTTP_ORIGIN']) for pattern in patterns):
+            yield 'Access-Control-Allow-Origin', '*'
