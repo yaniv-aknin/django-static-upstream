@@ -14,7 +14,7 @@ from django.utils.cache import patch_response_headers
 from . import settings
 from .utils import file_digest
 
-def serve(request, path, document_root=None, show_indexes=False, max_age=60*60*24*14, digest=None):
+def serve(request, path, document_root=None, show_indexes=False, cache_timeout=60*60*24*14, digest=None):
     """
     Serve static files below a given point in the directory structure.
 
@@ -65,7 +65,7 @@ def serve(request, path, document_root=None, show_indexes=False, max_age=60*60*2
     response["Last-Modified"] = http_date(statobj.st_mtime)
     response["Content-Length"] = statobj.st_size
     response["ETag"] = etag
-    patch_response_headers(response, cache_timeout = 60*60*24*14)
+    patch_response_headers(response, cache_timeout = cache_timeout)
     if encoding:
         response["Content-Encoding"] = encoding
     for pattern, mangler in settings.SUPSTREAM_HEADER_MANGLERS.iteritems():
