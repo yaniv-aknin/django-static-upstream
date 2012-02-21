@@ -4,21 +4,16 @@ django.views.static and then modified to my heart's desire.
 These CAN be used in a production setting, chillax.
 """
 
-import mimetypes
-import os
-import posixpath
-import re
-import urllib
+import mimetypes, os, posixpath, re, urllib
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
 from django.template import loader, Template, Context, TemplateDoesNotExist
 from django.utils.http import http_date, parse_http_date
-from django.views.decorators.cache import cache_control
+from django.utils.cache import patch_response_headers
 
 from . import settings
 from .utils import file_digest
 
-@cache_control(max_age=60*60*24*14)
 def serve(request, path, document_root=None, show_indexes=False, max_age=60*60*24*14, digest=None):
     """
     Serve static files below a given point in the directory structure.
@@ -70,6 +65,7 @@ def serve(request, path, document_root=None, show_indexes=False, max_age=60*60*2
     response["Last-Modified"] = http_date(statobj.st_mtime)
     response["Content-Length"] = statobj.st_size
     response["ETag"] = etag
+    patch_response_headers(response, cache_timeout = 60*60*24*14)
     if encoding:
         response["Content-Encoding"] = encoding
     for pattern, mangler in settings.SUPSTREAM_HEADER_MANGLERS.iteritems():
